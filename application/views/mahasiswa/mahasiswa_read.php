@@ -127,7 +127,7 @@
         <div class="col-md-4 ml-auto mt-5">
             
             <h6> .................................. 2019 </h6>
-            <h6> Pekanbaru </h6>
+            <h6> Pemohon </h6>
             <pre>
             
             
