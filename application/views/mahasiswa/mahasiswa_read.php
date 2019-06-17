@@ -123,21 +123,25 @@
             </div>
 
                                 <hr>
+        <div class="row">    
+            <div class="col-md-4 ml-auto mt-3">                    
+                <img class="img-thumbnail" src="<?php echo base_url('/images/')?><?php echo $photo ?>" width="200" height="200" alt="">                       
+            </div>
+            
+            <div class="col-md-4 ml-auto mt-3">            
+                <h6> .................................. 2019 </h6>
+                <h6> Pemohon </h6>
+                <pre>
+                
+                
+                
+                </pre>
+                <h6> .................................. </h6>
+            
+            </div>
+        </div>     
 
-        <div class="col-md-4 ml-auto mt-5">
-            
-            <h6> .................................. 2019 </h6>
-            <h6> Pemohon </h6>
-            <pre>
-            
-            
-            
-            </pre>
-            <h6> .................................. </h6>
-           
-        </div>
-           
-       
+        <?php $this->load->view("layouts/footer.php") ?>
 
 </body>
 

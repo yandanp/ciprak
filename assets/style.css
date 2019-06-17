@@ -1,0 +1,16 @@
+.copyrights {
+	margin-top: 4em;
+	text-align: center;
+}
+
+.copyrights p {
+	font-size: 0.8em;
+	color: rgb(2, 2, 2);
+	letter-spacing: 2px;
+	background: #fff;
+	padding: 10px;
+}
+
+.copyrights p a {
+	color: #f5af02;
+}

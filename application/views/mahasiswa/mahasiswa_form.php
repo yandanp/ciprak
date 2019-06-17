@@ -21,8 +21,8 @@
 				<span class="label label-info"><?php echo $this->session->flashdata('message'); ?></span>
 		
 				<?php
-					echo form_open('mahasiswa/create');
-				//	echo form_hidden('code',$biodata->id);
+					echo form_open_multipart('mahasiswa/create');
+				//	echo form_hidden('id',$id);
 				?>
 				<div class="form-group">
 					<span class="span2">Nama Lengkap</span>
@@ -174,6 +174,28 @@
 			</div>
 			</div>
 		</div>
+		<div class="card mt-4">
+			<div class="card-body bg-light">
+				<h5 class="card-title">Photo</h5>
+				<div class="col-sm-4">
+					<?php
+						if($photo==""){
+							echo"<p class='help-block'>Silahkan upload foto mahasiswa </p>";
+							echo "<img src='../../images/no-image.jpg' width='200' height='200'>";
+							echo "<input type='file' class='uploads form-control' name='photo' id='photo'>";
+						}else{
+					?>
+							<div>			
+								<img src="<?php echo base_url()?>images/<?php echo $photo; ?>" width="200" height="200">
+								<input type="file" class="uploads form-control" name="photo" id="photo">
+							</div>
+							<br />
+					<?php
+						}
+						?>
+				</div>
+			</div>
+		</div>
 			
 
 			<div class="form-group">
@@ -182,6 +204,7 @@
 			</div>
 			<?php echo form_close(); ?>
 		
+	<?php $this->load->view("layouts/footer.php") ?>
 	<?php $this->load->view("layouts/js.php") ?>
 
    
@@ -194,6 +217,28 @@
 		});
 		});
 	</script>
+
+	<script type="text/javascript">
+    function readURL() {
+        var input = this;
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $(input).prev().attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    $(function () {
+        $(".uploads").change(readURL)
+        $("#f").submit(function(){
+            // do ajax submit or just classic form submit
+          //  alert("fake subminting")
+            return false
+        })
+    })
+</script>
 </body>
 
 </html>

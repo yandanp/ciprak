@@ -70,9 +70,7 @@
 		
 	</div>
 
-
-
-
+	<?php $this->load->view("layouts/footer.php") ?>
 
 	<?php $this->load->view("layouts/js.php") ?>
 	<script>

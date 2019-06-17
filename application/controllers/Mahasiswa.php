@@ -9,6 +9,8 @@ class Mahasiswa extends CI_Controller
 		parent::__construct();
 		$this->load->library('form_validation');
 		$this->load->model('Mahasiswa_model');
+		$this->load->helper(array('form', 'url', 'string')); // Memanggil form dan url yang terdapat pada helper
+		$this->load->library('upload'); // Memanggil upload yang terdapat pada helper
     }
 
     public function index()
@@ -50,6 +52,7 @@ class Mahasiswa extends CI_Controller
 			'krj_ayah'     => set_value('krj_ayah', $result->krj_ayah),
 			'krj_ibu'      => set_value('krj_ibu', $result->krj_ibu),
 			'id_prodi'     => set_value('id_prodi', $result->id_prodi),
+			'photo'     => set_value('photo', $result->photo),
 		);
 		$data['view_biodata'] = $this->Mahasiswa_model->read_data();
 		$this->load->view('mahasiswa/mahasiswa_read', $data);
@@ -76,6 +79,7 @@ class Mahasiswa extends CI_Controller
 			'krj_ayah' => set_value('krj_ayah'),
 			'krj_ibu' => set_value('krj_ibu'),
 			'id_prodi' => set_value('id_prodi'),
+			'photo' => set_value('photo'),
 		);
         $this->load->view("mahasiswa/mahasiswa_form", $data);
     }
@@ -107,6 +111,7 @@ class Mahasiswa extends CI_Controller
 			'krj_ayah'     => set_value('krj_ayah', $result->krj_ayah),
 			'krj_ibu'      => set_value('krj_ibu', $result->krj_ibu),
 			'id_prodi'     => set_value('id_prodi', $result->id_prodi),
+			'photo'        => set_value('photo', $result->photo),
 		);
 		$data['view_biodata'] = $this->Mahasiswa_model->read_data();
 		$this->load->view('mahasiswa/mahasiswa_edit', $data);
@@ -135,6 +140,20 @@ class Mahasiswa extends CI_Controller
 		if ($this->form_validation->run() == FALSE){
 			$this->add();
 		} else {
+			// konfigurasi untuk melakukan upload photo
+			$config['upload_path']   = './images/';    //path folder image
+			$config['allowed_types'] = 'jpg|png|jpeg'; //type yang dapat diupload jpg|png|jpeg			
+			$config['file_name']     = random_string('alnum', 8);
+			$this->upload->initialize($config);
+			
+			// Jika file photo ada 
+			if(!empty($_FILES['photo']['name'])){
+				
+				if ($this->upload->do_upload('photo')){
+					$photo = $this->upload->data();	
+					$dataphoto = $photo['file_name'];					
+					$this->load->library('upload', $config);
+
 			$data = array(
 				'nama_lengkap' => $this->input->post('nama_lengkap'),
 				'tempat_lahir' => $this->input->post('tempat_lahir'),
@@ -152,18 +171,16 @@ class Mahasiswa extends CI_Controller
                 'nama_ibu'     => $this->input->post('nama_ibu'),
                 'krj_ayah'     => $this->input->post('krj_ayah'),
                 'krj_ibu'      => $this->input->post('krj_ibu'),
-                'id_prodi'     => $this->input->post('id_prodi')
+				'id_prodi'     => $this->input->post('id_prodi'),
+				'photo' 	   => $dataphoto, 
 			);
-			$create = $this->Mahasiswa_model->create_data($data);
+				$create = $this->Mahasiswa_model->create_data($data);
+			}
 			if ($create) $this->session->set_flashdata('message', 'Data berhasil disimpan!');
 			else $this->session->set_flashdata('message', 'Data gagal disimpan!');
 			redirect('mahasiswa/index');
 		}
-    }
-	
-	public function update()
-	{
-		$id = $this->input->post('id');
+		else {
 			$data = array(
 				'nama_lengkap' => $this->input->post('nama_lengkap'),
 				'tempat_lahir' => $this->input->post('tempat_lahir'),
@@ -181,13 +198,88 @@ class Mahasiswa extends CI_Controller
                 'nama_ibu'     => $this->input->post('nama_ibu'),
                 'krj_ayah'     => $this->input->post('krj_ayah'),
                 'krj_ibu'      => $this->input->post('krj_ibu'),
-                'id_prodi'     => $this->input->post('id_prodi')			
+				'id_prodi'     => $this->input->post('id_prodi')
+			);
+				$create = $this->Mahasiswa_model->create_data($data);
+				if ($create) $this->session->set_flashdata('message', 'Data berhasil disimpan!');
+				else $this->session->set_flashdata('message', 'Data gagal disimpan!');
+				redirect('mahasiswa/index');
+		}
+	}
+}
+	
+	public function update()
+	{
+		$id = $this->input->post('id');
+		$result = $this->Mahasiswa_model->get_data($id);
+		$config['upload_path']   = './images/';    //path folder
+		$config['allowed_types'] = 'jpg|png|jpeg'; //type yang dapat diupload jpg|png|jpeg			
+		$config['file_name']     = random_string('alnum', 8); //nama file photo dirubah menjadi nama berdasarkan nim	
+		$this->upload->initialize($config);
+		// Jika file photo ada 
+		if(!empty($_FILES['photo']['name'])){	
+			
+			// Menghapus file image lama
+			unlink("./images/".$result->photo);	
+			
+			// Upload file image baru
+			if ($this->upload->do_upload('photo')){
+				$photo = $this->upload->data();	
+				$dataphoto = $photo['file_name'];					
+				$this->load->library('upload', $config);
+
+			$data = array(
+				'nama_lengkap' => $this->input->post('nama_lengkap'),
+				'tempat_lahir' => $this->input->post('tempat_lahir'),
+				'tgl_lahir'    => $this->input->post('tgl_lahir'),
+				'agama'        => $this->input->post('agama'),
+				'jkel'         => $this->input->post('jkel'),
+				'status'       => $this->input->post('status'),
+				'alamat'       => $this->input->post('alamat'),
+                'telp'         => $this->input->post('telp'),
+                'asal_sklh'    => $this->input->post('asal_sklh'),
+                'thn_lulus'    => $this->input->post('thn_lulus'),
+                'n_ijazah'     => $this->input->post('n_ijazah'),
+                'n_un'         => $this->input->post('n_un'),
+                'nama_ayah'    => $this->input->post('nama_ayah'),
+                'nama_ibu'     => $this->input->post('nama_ibu'),
+                'krj_ayah'     => $this->input->post('krj_ayah'),
+                'krj_ibu'      => $this->input->post('krj_ibu'),
+				'id_prodi'     => $this->input->post('id_prodi'),
+				'photo' 	   => $dataphoto, 		
+			);
+				$update = $this->Mahasiswa_model->update_data($id,$data);
+			}
+				if ($update) $this->session->set_flashdata('message', 'Data berhasil dirubah!');
+				else $this->session->set_flashdata('message', 'Data gagal dirubah!');
+				redirect('mahasiswa');
+		} else {
+			$data = array(
+				'nama_lengkap' => $this->input->post('nama_lengkap'),
+				'tempat_lahir' => $this->input->post('tempat_lahir'),
+				'tgl_lahir'    => $this->input->post('tgl_lahir'),
+				'agama'        => $this->input->post('agama'),
+				'jkel'         => $this->input->post('jkel'),
+				'status'       => $this->input->post('status'),
+				'alamat'       => $this->input->post('alamat'),
+                'telp'         => $this->input->post('telp'),
+                'asal_sklh'    => $this->input->post('asal_sklh'),
+                'thn_lulus'    => $this->input->post('thn_lulus'),
+                'n_ijazah'     => $this->input->post('n_ijazah'),
+                'n_un'         => $this->input->post('n_un'),
+                'nama_ayah'    => $this->input->post('nama_ayah'),
+                'nama_ibu'     => $this->input->post('nama_ibu'),
+                'krj_ayah'     => $this->input->post('krj_ayah'),
+                'krj_ibu'      => $this->input->post('krj_ibu'),
+				'id_prodi'     => $this->input->post('id_prodi'),		
 			);
 			$update = $this->Mahasiswa_model->update_data($id,$data);
 			if ($update) $this->session->set_flashdata('message', 'Data berhasil dirubah!');
 			else $this->session->set_flashdata('message', 'Data gagal dirubah!');
 			redirect('mahasiswa');
+		}
 	}
+
     public function delete()
     {
         $id = $this->security->xss_clean($this->uri->segment(3));
@@ -196,6 +288,8 @@ class Mahasiswa extends CI_Controller
 			redirect('mahasiswa');
 		} else { 
 			$delete = $this->Mahasiswa_model->delete_data($id);
+			// menghapus file photo
+			unlink("./images/".$result->photo);
 			if ($delete) $this->session->set_flashdata('message', 'Data deleted!');
 			else $this->session->set_flashdata('message', 'Failed to delete data!');
 			redirect('mahasiswa');

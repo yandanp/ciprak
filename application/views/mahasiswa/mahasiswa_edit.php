@@ -21,7 +21,7 @@
 				<span class="label label-info"><?php echo $this->session->flashdata('message'); ?></span>
 		
 				<?php
-					echo form_open('mahasiswa/update');
+					echo form_open_multipart('mahasiswa/update');
 					echo form_hidden('id',$id);
 				?>
                 
@@ -162,12 +162,36 @@
 		</div>
 
 		<div class="form-group">
-				<span class="span2">Pilih Jurusan</span>
-				<?php 
-						echo combobox('id_prodi','prodi','nama_prodi','id', $id_prodi);
-					?>   
-				<span class="label label-important"><?php echo form_error('status'); ?></span>
+			<span class="span2">Pilih Jurusan</span>
+			<?php 
+					echo combobox('id_prodi','prodi','nama_prodi','id', $id_prodi);
+				?>   
+			<span class="label label-important"><?php echo form_error('status'); ?></span>
+		</div>
+		<div class="card mt-4">
+			<div class="card-body bg-light">
+				<h5 class="card-title">Photo</h5>
+				<div class="col-sm-4">
+					<?php
+						if($photo==""){
+							echo"<p class='help-block'>Silahkan upload foto mahasiswa </p>"; ?>
+							<img src="<?php echo base_url()?>images/no-image.jpg" width="200" height="200">
+							<input type="file" name="photo" class="uploads form-control" id="photo">	
+						<?php
+						}
+						 else{
+					?>
+						<div>			
+							<img src="<?php echo base_url()?>images/<?php echo $photo; ?>" width="200" height="200">
+							<input type="file" name="photo" class="uploads form-control" id="photo">							
+						</div>
+						<br />
+					<?php
+						}
+						?>				
+				</div>
 			</div>
+		</div>
 
 			<div class="form-group">
             <span class="span2">&nbsp;</span>
@@ -178,7 +202,7 @@
 
 
 
-
+	<?php $this->load->view("layouts/footer.php") ?>
 
 	<?php $this->load->view("layouts/js.php") ?>
 
@@ -192,6 +216,28 @@
 		});
 		});
 	</script>
+
+<script type="text/javascript">
+    function readURL() {
+        var input = this;
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $(input).prev().attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    $(function () {
+        $(".uploads").change(readURL)
+        $("#f").submit(function(){
+            // do ajax submit or just classic form submit
+          //  alert("fake subminting")
+            return false
+        })
+    })
+</script>
 </body>
 
 </html>
